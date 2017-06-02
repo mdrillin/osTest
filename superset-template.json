@@ -1,0 +1,156 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "superset-demo",
+    "creationTimestamp": null,
+    "annotations": {
+      "openshift.io/display-name": "Superset demo",
+      "description": "Demo using superset with teiid",
+      "iconClass": "icon-database",
+      "tags": "teiid,superset"
+    }
+  },
+  "message": "The superset demo has been created in your project.",
+  "parameters": [
+        {
+            "description": "The name for the application.",
+            "displayName": "Application Name",
+            "name": "APPLICATION_NAME",
+            "value": "superset-demo",
+            "required": true
+        },
+        {
+            "description": "Specify a custom hostname for the http route.  Leave blank to use default hostname, e.g.: <service-name>-<project>.<default-domain-suffix>",
+            "displayName": "Custom http Route Hostname",
+            "name": "HOSTNAME_HTTP",
+            "value": "",
+            "required": false
+        }
+   ],
+  "labels": {
+    "template": "superset-demo"
+   },
+  "objects": [
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "creationTimestamp": null
+      },
+      "spec": {
+        "dockerImageRepository": "amancevice/superset",
+        "tags": [
+          {
+            "name": "latest",
+            "annotations": {
+              "description": "Provides Superset",
+              "iconClass": "icon-database",
+              "tags": "service,superset",
+              "version": "latest"
+            }
+          }
+        ]
+      },
+      "status": {
+        "dockerImageRepository": ""
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "creationTimestamp": null,
+        "labels": {
+            "application": "${APPLICATION_NAME}"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "8088-tcp",
+            "protocol": "TCP",
+            "port": 8088,
+            "targetPort": 8088
+          }
+        ],
+        "selector": {
+          "name": "${APPLICATION_NAME}"
+        },
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "kind": "Pod",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "creationTimestamp": null,
+        "labels": {
+          "name": "${APPLICATION_NAME}"
+        }
+      },
+      "spec": {
+        "volumes": [
+          {
+            "name": "superset-vol1",
+            "emptyDir": {}
+          }
+        ],
+        "containers": [
+          {
+            "name": "server",
+            "image": "amancevice/superset",
+            "ports": [
+              {
+                "containerPort": 8088,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {},
+            "terminationMessagePath": "/dev/termination-log",
+            "imagePullPolicy": "IfNotPresent",
+            "securityContext": {
+              "capabilities": {},
+              "privileged": false
+            }
+          }
+        ],
+        "restartPolicy": "Always",
+        "dnsPolicy": "ClusterFirst"
+      },
+      "status": {}
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+          "name": "${APPLICATION_NAME}",
+          "creationTimestamp": null,
+          "labels": {
+              "application": "${APPLICATION_NAME}"
+          },
+          "annotations": {
+              "description": "Route for http access"
+          }
+      },
+      "spec": {
+          "host": "${HOSTNAME_HTTP}",
+          "to": {
+              "kind": "Service",
+              "name": "${APPLICATION_NAME}"
+          },
+          "port": {
+              "targetPort": "8088-tcp"
+          }
+      }
+    }
+  ]
+}
+
