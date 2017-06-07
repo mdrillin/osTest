@@ -21,6 +21,13 @@
             "required": true
         },
         {
+            "description": "Namespace in which the ImageStreams for Red Hat Middleware images are installed. These ImageStreams are normally installed in the openshift namespace. You should only need to modify this if you've installed the ImageStreams in a different namespace/project.",
+            "displayName": "ImageStream Namespace",
+            "name": "IMAGE_STREAM_NAMESPACE",
+            "value": "openshift",
+            "required": true
+        },
+        {
             "description": "Specify a custom hostname for the http route.  Leave blank to use default hostname, e.g.: <service-name>-<project>.<default-domain-suffix>",
             "displayName": "Custom http Route Hostname",
             "name": "HOSTNAME_HTTP",
@@ -33,31 +40,53 @@
    },
   "objects": [
     {
-      "kind": "ImageStream",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${APPLICATION_NAME}",
-        "creationTimestamp": null
-      },
-      "spec": {
-        "dockerImageRepository": "amancevice/superset",
-        "tags": [
-          {
-            "name": "latest",
-            "annotations": {
-              "description": "Provides Superset",
-              "iconClass": "icon-database",
-              "tags": "service,superset",
-              "version": "latest"
+        "kind": "ImageStream",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "${APPLICATION_NAME}",
+            "labels": {
+                "application": "${APPLICATION_NAME}"
             }
-          }
-        ]
-      },
-      "status": {
-        "dockerImageRepository": ""
-      }
+        }
     },
     {
+        "kind": "BuildConfig",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "${APPLICATION_NAME}",
+            "labels": {
+                "application": "${APPLICATION_NAME}"
+            }
+        },
+        "spec": {
+          "source": {
+            "type": "Git",
+            "git": {
+              "uri": "https://github.com/mdrillin/osTest.git",
+              "ref": "master"
+            },
+            "contextDir": "superset"
+          },
+          "strategy": {
+            "type": "Docker",
+            "dockerStrategy": {
+              "from": {
+                "kind": "ImageStreamTag",
+                "namespace": "${IMAGE_STREAM_NAMESPACE}",
+                "name": "superset:latest"
+              }
+            }
+          },
+          "output": {
+            "to": {
+              "kind": "ImageStreamTag",
+              "name": "${APPLICATION_NAME}:latest"
+            }
+          },
+          "resources": {}
+        }
+      },
+      {
       "kind": "Service",
       "apiVersion": "v1",
       "metadata": {
