@@ -49,7 +49,7 @@
             }
         }
     },
-    {
+      {
         "kind": "BuildConfig",
         "apiVersion": "v1",
         "metadata": {
@@ -62,20 +62,12 @@
           "source": {
             "type": "Git",
             "git": {
-              "uri": "https://github.com/mdrillin/osTest.git",
+              "uri": "https://github.com/tylerFowler/docker-superset.git",
               "ref": "master"
-            },
-            "contextDir": "superset"
+            }
           },
           "strategy": {
-            "type": "Docker",
-            "dockerStrategy": {
-              "from": {
-                "kind": "ImageStreamTag",
-                "namespace": "${IMAGE_STREAM_NAMESPACE}",
-                "name": "superset:latest"
-              }
-            }
+            "type": "Docker"
           },
           "output": {
             "to": {
@@ -135,7 +127,7 @@
         "containers": [
           {
             "name": "server",
-            "image": "amancevice/superset",
+            "image": "${APPLICATION_NAME}",
             "ports": [
               {
                 "containerPort": 8088,

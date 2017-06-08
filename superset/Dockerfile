@@ -1,2 +1,0 @@
-FROM amancevice/superset:latest
-
