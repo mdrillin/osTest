@@ -5,7 +5,7 @@
     "name": "superset-demo",
     "creationTimestamp": null,
     "annotations": {
-      "openshift.io/display-name": "Superset demo",
+      "openshift.io/display-name": "Superset Demo",
       "description": "Demo using superset with teiid",
       "iconClass": "icon-database",
       "tags": "teiid,superset"
@@ -21,13 +21,6 @@
             "required": true
         },
         {
-            "description": "Namespace in which the ImageStreams for Red Hat Middleware images are installed. These ImageStreams are normally installed in the openshift namespace. You should only need to modify this if you've installed the ImageStreams in a different namespace/project.",
-            "displayName": "ImageStream Namespace",
-            "name": "IMAGE_STREAM_NAMESPACE",
-            "value": "openshift",
-            "required": true
-        },
-        {
             "description": "Specify a custom hostname for the http route.  Leave blank to use default hostname, e.g.: <service-name>-<project>.<default-domain-suffix>",
             "displayName": "Custom http Route Hostname",
             "name": "HOSTNAME_HTTP",
@@ -39,7 +32,7 @@
     "template": "superset-demo"
    },
   "objects": [
-    {
+      {
         "kind": "ImageStream",
         "apiVersion": "v1",
         "metadata": {
@@ -48,7 +41,7 @@
                 "application": "${APPLICATION_NAME}"
             }
         }
-    },
+      },
       {
         "kind": "BuildConfig",
         "apiVersion": "v1",
@@ -79,99 +72,132 @@
         }
       },
       {
-      "kind": "Service",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${APPLICATION_NAME}",
-        "creationTimestamp": null,
-        "labels": {
-            "application": "${APPLICATION_NAME}"
-        }
-      },
-      "spec": {
-        "ports": [
-          {
-            "name": "8088-tcp",
-            "protocol": "TCP",
-            "port": 8088,
-            "targetPort": 8088
-          }
-        ],
-        "selector": {
-          "name": "${APPLICATION_NAME}"
-        },
-        "type": "ClusterIP",
-        "sessionAffinity": "None"
-      },
-      "status": {
-        "loadBalancer": {}
-      }
-    },
-    {
-      "kind": "Pod",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${APPLICATION_NAME}",
-        "creationTimestamp": null,
-        "labels": {
-          "name": "${APPLICATION_NAME}"
-        }
-      },
-      "spec": {
-        "volumes": [
-          {
-            "name": "superset-vol1",
-            "emptyDir": {}
-          }
-        ],
-        "containers": [
-          {
-            "name": "server",
-            "image": "${APPLICATION_NAME}",
-            "ports": [
-              {
-                "containerPort": 8088,
-                "protocol": "TCP"
-              }
-            ],
-            "resources": {},
-            "terminationMessagePath": "/dev/termination-log",
-            "imagePullPolicy": "IfNotPresent",
-            "securityContext": {
-              "capabilities": {},
-              "privileged": false
-            }
-          }
-        ],
-        "restartPolicy": "Always",
-        "dnsPolicy": "ClusterFirst"
-      },
-      "status": {}
-    },
-    {
-      "kind": "Route",
-      "apiVersion": "v1",
-      "metadata": {
+        "kind": "Service",
+        "apiVersion": "v1",
+        "metadata": {
           "name": "${APPLICATION_NAME}",
           "creationTimestamp": null,
           "labels": {
-              "application": "${APPLICATION_NAME}"
-          },
-          "annotations": {
-              "description": "Route for http access"
+            "application": "${APPLICATION_NAME}"
           }
+        },
+        "spec": {
+          "ports": [
+            {
+              "name": "8088-tcp",
+              "protocol": "TCP",
+              "port": 8088,
+              "targetPort": 8088
+            }
+          ],
+          "selector": {
+            "deploymentConfig": "${APPLICATION_NAME}"
+          },
+          "type": "ClusterIP",
+          "sessionAffinity": "None"
+        },
+        "status": {
+          "loadBalancer": {}
+        }
       },
-      "spec": {
-          "host": "${HOSTNAME_HTTP}",
-          "to": {
-              "kind": "Service",
-              "name": "${APPLICATION_NAME}"
-          },
-          "port": {
-              "targetPort": "8088-tcp"
-          }
+      {
+        "kind": "Route",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "${APPLICATION_NAME}",
+            "creationTimestamp": null,
+            "labels": {
+                "application": "${APPLICATION_NAME}"
+            },
+            "annotations": {
+                "description": "Route for http access"
+            }
+        },
+        "spec": {
+            "host": "${HOSTNAME_HTTP}",
+            "to": {
+                "kind": "Service",
+                "name": "${APPLICATION_NAME}"
+            },
+            "port": {
+                "targetPort": "8088-tcp"
+            }
+        }
+      },
+      {
+        "kind": "DeploymentConfig",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "${APPLICATION_NAME}",
+            "labels": {
+                "application": "${APPLICATION_NAME}"
+            }
+        },
+        "spec": {
+            "strategy": {
+                "type": "Recreate"
+            },
+            "triggers": [
+                {
+                    "type": "ImageChange",
+                    "imageChangeParams": {
+                        "automatic": true,
+                        "containerNames": [
+                            "${APPLICATION_NAME}"
+                        ],
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "${APPLICATION_NAME}:latest"
+                        }
+                    }
+                },
+                {
+                    "type": "ConfigChange"
+                }
+            ],
+            "replicas": 1,
+            "selector": {
+                "deploymentConfig": "${APPLICATION_NAME}"
+            },
+            "template": {
+                "metadata": {
+                    "name": "${APPLICATION_NAME}",
+                    "labels": {
+                        "deploymentConfig": "${APPLICATION_NAME}",
+                        "application": "${APPLICATION_NAME}"
+                    }
+                },
+                "spec": {
+                    "serviceAccountName": "default",
+                    "terminationGracePeriodSeconds": 60,
+                    "containers": [
+                        {
+                            "name": "${APPLICATION_NAME}",
+                            "image": "${APPLICATION_NAME}",
+                            "imagePullPolicy": "Always",
+                            "resources" : {
+                                "requests" : {
+                                    "cpu" : "500m",
+                                    "memory" : "1536Mi"
+                                },
+                                "limits" : {
+                                    "cpu" : "1",
+                                    "memory" : "1536Mi"
+                                }
+                            },
+                            "ports": [
+                                {
+                                    "name": "http",
+                                    "containerPort": 8088,
+                                    "protocol": "TCP"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
       }
-    }
   ]
 }
 
