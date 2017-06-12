@@ -1,7 +1,5 @@
 FROM python:3.6-slim
 
-USER superset
-
 MAINTAINER Tyler Fowler <tylerfowler.1337@gmail.com>
 
 # Superset setup options

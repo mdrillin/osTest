@@ -9,7 +9,6 @@ set -eo pipefail
 echo "Checking for existing Superset config..."
 if [ ! -f $SUPERSET_HOME/superset_config.py ]; then
   echo "No Superset config found, creating from environment"
-  touch $SUPERSET_HOME/superset_config.py
 
   cat > $SUPERSET_HOME/superset_config.py <<EOF
 ROW_LIMIT = ${SUP_ROW_LIMIT}
