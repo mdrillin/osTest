@@ -43,6 +43,16 @@
         }
       },
       {
+        "kind": "ImageStream",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "${APPLICATION_NAME}-postgres",
+            "labels": {
+                "application": "${APPLICATION_NAME}-postgres"
+            }
+        }
+     },
+     {
         "kind": "BuildConfig",
         "apiVersion": "v1",
         "metadata": {
@@ -66,6 +76,40 @@
             "to": {
               "kind": "ImageStreamTag",
               "name": "${APPLICATION_NAME}:latest"
+            }
+          },
+          "triggers": [
+              {
+                  "type": "ConfigChange"
+              }
+          ]
+        }
+      },
+     {
+        "kind": "BuildConfig",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "${APPLICATION_NAME}-postgres",
+            "labels": {
+                "application": "${APPLICATION_NAME}-postgres"
+            }
+        },
+        "spec": {
+          "source": {
+            "type": "Git",
+            "git": {
+              "uri": "https://github.com/sclorg/postgresql-container.git",
+              "ref": "master"
+            },
+            "contextDir": "9.4"
+          },
+          "strategy": {
+            "type": "Docker"
+          },
+          "output": {
+            "to": {
+              "kind": "ImageStreamTag",
+              "name": "${APPLICATION_NAME}-postgres:latest"
             }
           },
           "triggers": [
@@ -105,6 +149,30 @@
         }
       },
       {
+        "kind": "Service",
+        "apiVersion": "v1",
+        "spec": {
+            "ports": [
+                {
+                    "port": 5432,
+                    "targetPort": 5432
+                }
+            ],
+            "selector": {
+                "deploymentConfig": "${APPLICATION_NAME}-postgres"
+            }
+        },
+        "metadata": {
+            "name": "${APPLICATION_NAME}-postgres",
+            "labels": {
+                "application": "${APPLICATION_NAME}-postgres"
+            },
+            "annotations": {
+                "description": "The database server's port."
+            }
+        }
+      },
+      {
         "kind": "Route",
         "apiVersion": "v1",
         "metadata": {
@@ -125,6 +193,100 @@
             },
             "port": {
                 "targetPort": "8088-tcp"
+            }
+        }
+      },
+      {
+        "kind": "DeploymentConfig",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "${APPLICATION_NAME}-postgres",
+            "labels": {
+                "application": "${APPLICATION_NAME}-postgres"
+            }
+        },
+        "spec": {
+            "strategy": {
+                "type": "Rolling"
+            },
+            "triggers": [
+                {
+                    "type": "ConfigChange"
+                },
+                {
+                    "type": "ImageChange",
+                    "imageChangeParams": {
+                        "automatic": true,
+                        "containerNames": [
+                            "${APPLICATION_NAME}-postgres"
+                        ],
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "${APPLICATION_NAME}-postgres:latest"
+                        }
+                    }
+                }
+            ],
+            "replicas": 1,
+            "selector": {
+                "deploymentConfig": "${APPLICATION_NAME}-postgres"
+            },
+            "template": {
+                "metadata": {
+                    "name": "${APPLICATION_NAME}-postgres",
+                    "labels": {
+                        "deploymentConfig": "${APPLICATION_NAME}-postgres",
+                        "application": "${APPLICATION_NAME}-postgres"
+                    }
+                },
+                "spec": {
+                    "terminationGracePeriodSeconds": "60",
+                    "containers": [
+                        {
+                            "name": "${APPLICATION_NAME}-postgres",
+                            "image": "${APPLICATION_NAME}-postgres",
+                            "imagePullPolicy": "Always",
+                            "volumeMounts": [
+                                {
+                                    "name": "${APPLICATION_NAME}-postgres-1",
+                                    "mountPath": "/var/lib/postgres/data"
+                                }
+                            ],
+                            "resources" : {
+                                "limits" : {
+                                    "cpu" : "1",
+                                    "memory" : "500Mi"
+                                }
+                            },
+                            "ports": [
+                                {
+                                    "name": "postgres",
+                                    "containerPort": 5432,
+                                    "protocol": "TCP"
+                                }
+                            ],
+                            "env": [
+                                {
+                                    "name": "POSTGRESQL_USER",
+                                    "value": "pguser"
+                                },
+                                {
+                                    "name": "POSTGRESQL_PASSWORD",
+                                    "value": "pguser"
+                                },
+                                {
+                                    "name": "POSTGRESQL_DATABASE",
+                                    "value": "sample"
+                                }
+                            ]
+                       }
+                    ],
+                    "volumes": [
+                        {
+                            "name": "${APPLICATION_NAME}-postgres-1"
+                        }
+                    ]
+                }
             }
         }
       },
