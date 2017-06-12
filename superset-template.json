@@ -65,9 +65,10 @@
           "source": {
             "type": "Git",
             "git": {
-              "uri": "https://github.com/tylerFowler/docker-superset.git",
+              "uri": "https://github.com/mdrillin/osTest.git",
               "ref": "master"
-            }
+            },
+            "contextDir": "superset"
           },
           "strategy": {
             "type": "Docker"
