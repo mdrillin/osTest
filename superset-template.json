@@ -38,23 +38,21 @@
             "displayName": "Database Username",
             "description": "Database user name",
             "name": "DB_USERNAME",
-            "from": "user[a-zA-Z0-9]{3}",
-            "generate": "expression",
+            "value": "pguser",
             "required": true
         },
         {
             "displayName": "Database Password",
             "description": "Database user password",
             "name": "DB_PASSWORD",
-            "from": "[a-zA-Z0-9]{8}",
-            "generate": "expression",
+            "value": "pguser",
             "required": true
         },
         {
             "displayName": "Database Name",
             "description": "Database name",
             "name": "DB_DATABASE",
-            "value": "root",
+            "value": "pgdb",
             "required": true
         },
         {
