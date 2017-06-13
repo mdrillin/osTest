@@ -54,9 +54,6 @@ EOF
   echo "Creating default roles and permissions"
   superset init
 
-  echo "Loading Superset examples"
-  superset load_examples
-
   touch $SUPERSET_HOME/.setup-complete
 else
   # always upgrade the database, running any pending migrations
