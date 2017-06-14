@@ -4,6 +4,8 @@ USER superset
 
 MAINTAINER Mark Drilling <mdrillin@redhat.com>
 
+ENV SUPERSET_HOME /superset
+
 # admin auth details
 ENV ADMIN_USERNAME admin
 ENV ADMIN_FIRST_NAME admin
