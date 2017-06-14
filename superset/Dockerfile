@@ -11,3 +11,5 @@ ENV ADMIN_LAST_NAME user
 ENV ADMIN_EMAIL admin@nowhere.com
 ENV ADMIN_PWD superset
 
+ENTRYPOINT [ "/superset-init.sh" ]
+
