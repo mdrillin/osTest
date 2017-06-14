@@ -1,5 +1,7 @@
 FROM amancevice/superset
 
+USER superset
+
 MAINTAINER Mark Drilling <mdrillin@redhat.com>
 
 # admin auth details
