@@ -3,11 +3,11 @@
 set -eo pipefail
 
 # set up Superset if we haven't already
-if [ ! -f $SUPERSET_HOME/.setup-complete ]; then
+if [ ! -f ./.setup-complete ]; then
   echo "Running first time setup for Superset"
 
   echo "Creating admin user ${ADMIN_USERNAME}"
-  cat > $SUPERSET_HOME/admin.config <<EOF
+  cat > ./admin.config <<EOF
 ${ADMIN_USERNAME}
 ${ADMIN_FIRST_NAME}
 ${ADMIN_LAST_NAME}
@@ -17,7 +17,7 @@ ${ADMIN_PWD}
 
 EOF
 
-  /bin/sh -c '/usr/local/bin/fabmanager create-admin --app superset < $SUPERSET_HOME/admin.config'
+  /bin/sh -c '/usr/local/bin/fabmanager create-admin --app superset < ./admin.config'
 
-  rm $SUPERSET_HOME/admin.config
+  rm ./admin.config
 
