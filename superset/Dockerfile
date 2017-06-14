@@ -11,6 +11,7 @@ ENV ADMIN_LAST_NAME user
 ENV ADMIN_EMAIL admin@nowhere.com
 ENV ADMIN_PWD superset
 
+USER root
 # remove build dependencies
 RUN mkdir $SUPERSET_HOME
 
@@ -19,5 +20,6 @@ RUN chmod +x /superset-init.sh
 
 VOLUME $SUPERSET_HOME
 
+USER superset
 ENTRYPOINT [ "/superset-init.sh" ]
 
