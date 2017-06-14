@@ -29,6 +29,7 @@ $ oc get pods
 
 ##### use the pod name to load postgres data from initital_data.sql, for example
 $ oc exec -i superset-demo-postgresql-1-ru0zb -- /bin/sh -i -c 'psql -h 127.0.0.1 -U pguser -q -d pgdb' < initial_data.sql
+- Wait for loading to complete - there is no logging and it takes a few minutes!
 
 ## Create Views / Dashboards in superset console
 log into the superset console via Route Link (credentials : admin/superset)
@@ -37,7 +38,7 @@ log into the superset console via Route Link (credentials : admin/superset)
 
 Sources > Databases,  click "+" to add new database
 - Database name   : postgresql
-- SQL Alchemy URI : postgresql+psycopg2://pguser:pguser@superset-demo-postgresql.<projectName>.svc.cluster.local:5432/pgdb
+- SQL Alchemy URI : postgresql+psycopg2://pguser:pguser@superset-demo-postgresql.[projectName].svc.cluster.local:5432/pgdb
 
 example for project 'test'
 - postgresql+psycopg2://pguser:pguser@superset-demo-postgresql.test.svc.cluster.local:5432/pgdb
