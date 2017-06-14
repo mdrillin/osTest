@@ -21,3 +21,4 @@ EOF
 
   rm ./admin.config
 
+fi
