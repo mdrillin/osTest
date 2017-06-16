@@ -44,13 +44,14 @@ RUN apt-get update && apt-get install -y $DB_PACKAGES \
 RUN mkdir $SUPERSET_HOME
 
 # ADD USER
-RUN useradd -ms /bin/bash myuser
+RUN adduser --disabled-password --gid 0 --gecos "my user" myuser
 
 RUN chown -R myuser:root $SUPERSET_HOME
 
 COPY superset-init.sh /superset-init.sh
 RUN chown myuser:root /superset-init.sh
 RUN chmod +x /superset-init.sh
+RUN chmod 0775 $SUPSERSET_HOME
 
 VOLUME $SUPERSET_HOME
 EXPOSE 8088
