@@ -45,6 +45,8 @@ RUN mkdir $SUPERSET_HOME
 
 # ADD USER
 RUN adduser --disabled-password --gid 0 --gecos "my user" myuser
+USER myuser
+WORKDIR $SUPERSET_HOME
 
 RUN chown -R myuser:root $SUPERSET_HOME
 
@@ -52,14 +54,9 @@ COPY superset-init.sh /superset-init.sh
 RUN chown myuser:root /superset-init.sh
 RUN chmod +x /superset-init.sh
 RUN chmod 0775 $SUPERSET_HOME
-RUN chown -R myuser:root /.superset
-RUN chmod 0775 /.superset
 
 VOLUME $SUPERSET_HOME
 EXPOSE 8088
-
-USER myuser
-WORKDIR $SUPERSET_HOME
 
 # since this can be used as a base image adding the file /docker-entrypoint.sh
 # is all you need to do and it will be run *before* Superset is set up
