@@ -43,7 +43,11 @@ RUN apt-get update && apt-get install -y $DB_PACKAGES \
 # remove build dependencies
 RUN mkdir $SUPERSET_HOME
 
+# ADD USER
+RUN adduser myuser root
+
 COPY superset-init.sh /superset-init.sh
+RUN chown myuser:root /superset-init.sh
 RUN chmod +x /superset-init.sh
 
 VOLUME $SUPERSET_HOME
