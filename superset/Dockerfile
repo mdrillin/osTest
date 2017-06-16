@@ -2,6 +2,8 @@ FROM python:3.6-slim
 
 MAINTAINER Tyler Fowler <tylerfowler.1337@gmail.com>
 
+USER superset
+
 # Superset setup options
 ENV SUPERSET_VERSION 0.18.4
 ENV SUPERSET_HOME /superset
