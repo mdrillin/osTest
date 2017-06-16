@@ -51,7 +51,7 @@ RUN chown -R myuser:root $SUPERSET_HOME
 COPY superset-init.sh /superset-init.sh
 RUN chown myuser:root /superset-init.sh
 RUN chmod +x /superset-init.sh
-RUN chmod 0775 $SUPSERSET_HOME
+RUN chmod 0775 $SUPERSET_HOME
 
 VOLUME $SUPERSET_HOME
 EXPOSE 8088
