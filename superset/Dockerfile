@@ -56,6 +56,7 @@ VOLUME $SUPERSET_HOME
 EXPOSE 8088
 
 USER myuser
+WORKDIR $SUPERSET_HOME
 
 # since this can be used as a base image adding the file /docker-entrypoint.sh
 # is all you need to do and it will be run *before* Superset is set up
