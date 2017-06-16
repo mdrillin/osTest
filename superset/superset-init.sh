@@ -44,7 +44,7 @@ ${ADMIN_PWD}
 EOF
   echo "execute fabmanager ${ADMIN_USERNAME} ${ADMIN_FIRST_NAME} ${ADMIN_LAST_NAME} ${ADMIN_EMAIL} ${ADMIN_PWD}"
 
-  /bin/sh -c '/usr/local/bin/fabmanager create-admin --app superset < $SUPERSET_HOME/admin.config'
+  # /bin/sh -c '/usr/local/bin/fabmanager create-admin --app superset < $SUPERSET_HOME/admin.config'
 
   echo "done execute fabmanager"
 
