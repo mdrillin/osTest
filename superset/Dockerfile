@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install -y $DB_PACKAGES \
 RUN mkdir $SUPERSET_HOME
 
 # ADD USER
-RUN adduser myuser root
+RUN useradd -ms /bin/bash myuser
 
 COPY superset-init.sh /superset-init.sh
 RUN chown myuser:root /superset-init.sh
