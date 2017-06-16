@@ -46,6 +46,8 @@ RUN mkdir $SUPERSET_HOME
 # ADD USER
 RUN useradd -ms /bin/bash myuser
 
+RUN chown -R myuser:root $SUPERSET_HOME
+
 COPY superset-init.sh /superset-init.sh
 RUN chown myuser:root /superset-init.sh
 RUN chmod +x /superset-init.sh
