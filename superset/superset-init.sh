@@ -9,6 +9,9 @@ set -eo pipefail
 echo "Checking for existing Superset config..."
 if [ ! -f $SUPERSET_HOME/superset_config.py ]; then
   echo "No Superset config found, creating from environment"
+  echo "user is: "
+  echo $USER
+  echo "permissions: "  
   ls -la $SUPERSET_HOME
   cat > $SUPERSET_HOME/superset_config.py <<EOF
 ROW_LIMIT = ${SUP_ROW_LIMIT}
