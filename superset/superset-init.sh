@@ -9,6 +9,7 @@ set -eo pipefail
 echo "Checking for existing Superset config..."
 if [ ! -f $SUPERSET_HOME/superset_config.py ]; then
   echo "No Superset config found, creating from environment"
+
   cat > $SUPERSET_HOME/superset_config.py <<EOF
 ROW_LIMIT = ${SUP_ROW_LIMIT}
 WEBSERVER_THREADS = ${SUP_WEBSERVER_THREADS}
@@ -42,11 +43,8 @@ ${ADMIN_PWD}
 ${ADMIN_PWD}
 
 EOF
-  echo "execute fabmanager ${ADMIN_USERNAME} ${ADMIN_FIRST_NAME} ${ADMIN_LAST_NAME} ${ADMIN_EMAIL} ${ADMIN_PWD}"
 
-  # /bin/sh -c '/usr/local/bin/fabmanager create-admin --app superset < $SUPERSET_HOME/admin.config'
-
-  echo "done execute fabmanager"
+  /bin/sh -c '/usr/local/bin/fabmanager create-admin --app superset < $SUPERSET_HOME/admin.config'
 
   rm $SUPERSET_HOME/admin.config
 
