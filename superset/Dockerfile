@@ -42,6 +42,7 @@ RUN apt-get update && apt-get install -y $DB_PACKAGES \
 
 # remove build dependencies
 RUN mkdir $SUPERSET_HOME
+RUN chmod 777 $SUPERSET_HOME
 
 COPY superset-init.sh /superset-init.sh
 RUN chmod +x /superset-init.sh
