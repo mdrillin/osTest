@@ -48,6 +48,8 @@ RUN chmod 777 /.superset
 
 COPY superset-init.sh /superset-init.sh
 RUN chmod +x /superset-init.sh
+COPY demo_init.py $SUPERSET_HOME/demo_init.py
+RUN chmod +x $SUPERSET_HOME/demo_init.py
 
 VOLUME $SUPERSET_HOME
 EXPOSE 8088

@@ -1,55 +1,36 @@
-# Superset on Openshift example
+# Superset on OpenShift example
 
 ## Summary
 
-Purpose is to demostrate deployment of Airbnb's superset to OpenShift.  Initially, the demo includes the superset deployment plus a Postgresql database with sample data.  The steps to deploy are below.  This process will continue to be refined.
+The purpose of this demo is to show deployment of Airbnb's Superset to OpenShift.  Initially, the demo includes the Superset deployment plus a Postgresql database with sample data.  The steps to deploy are below.  This process will continue to be refined.
 
-## Deploy the OpenShift demo app
-##### Create a new project
-$ oc new-project test
+## Deploy the Superset demo to OpenShift
+##### Prerequisites
+- Access to an OpenShift instance and credentials for login.
+- OpenShift command line tools installed to your system
+- This git repository cloned to your system
 
-##### Deploy the app
-$ oc new-app -f https://raw.githubusercontent.com/mdrillin/osTest/master/superset-template.json
+##### Install the demo to OpenShift
+The demo can be installed via the script provided in the git repository location on your system.
+- cd into the git repo directory.
+- edit config.sh to use your OpenShift username and password
+- __$ ./setup.sh -h &lt;HOST&gt;__ , where &lt;HOST&gt; is the hostname of your OpenShift instance,
+for example __$ ./setups.sh -h http://10.1.2.2:8443__
+- please wait for the script to complete - it will take several minutes for the sample data to load.
 
-##### Monitor the deployment in the OpenShift console (eg https://10.1.2.2:8443/console or equivalent)
+##### Monitor the deployment in the OpenShift console (eg __https://10.1.2.2:8443/console__ or equivalent)
 - Overview will show the deployment in progress.  Can view logs, etc.
-- The first deployment will take awhile - as dockerfile is processed.
+- The first deployment will take awhile - as the Dockerfile is processed.
 
 ##### Log into the superset console to verify it is active
-Once both pods are active, access superset via the "Route Link"
-- superset credentials (user: admin, password: superset)
+Once both pods are active, access Superset via the "Route Link".  It may take several minutes before the link is active (while Superset initializes)
+- Superset credentials (user: admin, password: superset)
 
-## Load Postgres sample data
+## Create Views / Dashboards in Superset console
+log into the Superset console via Route Link (credentials : admin/superset)
 
-##### Get a local copy of the data (initial_data.sql)
-https://raw.githubusercontent.com/mdrillin/osTest/master/initial_data.sql
-
-##### get the postgres pod name
-$ oc get pods
-
-##### use the pod name to load postgres data from initital_data.sql, for example
-$ oc exec -i superset-demo-postgresql-1-ru0zb -- /bin/sh -i -c 'psql -h 127.0.0.1 -U pguser -q -d pgdb' < initial_data.sql
-- Wait for loading to complete - there is no logging and it takes a few minutes!
-
-## Create Views / Dashboards in superset console
-log into the superset console via Route Link (credentials : admin/superset)
-
-##### Add the postgres database
-
-Sources > Databases,  click "+" to add new database
-- Database name   : postgresql
-- SQL Alchemy URI : postgresql+psycopg2://pguser:pguser@superset-demo-postgresql.[projectName].svc.cluster.local:5432/pgdb
-
-example for project 'test'
-- postgresql+psycopg2://pguser:pguser@superset-demo-postgresql.test.svc.cluster.local:5432/pgdb
-
-- Click 'Test Connection' to verify connection
-- Click Save
-
-##### Add the postgres database tables
-- Sources > Tables, click "+" to add new table
-- Choose Database = postgresq
-- Enter the table name, then click Save
+##### postgres demo database
+The setup script configures the postgres demo database and tables in superset.  You can view available databases using __Sources > Databases__  and available tables using __Sources > Tables__
 
 Available table names in the sample data:
 - ROUTE
@@ -60,6 +41,8 @@ Available table names in the sample data:
 - CAR_DATA
 
 ##### Create a 'slice' to view the data
+The setup script will eventually configure 'slices', but for now you will need to create manually...
+
 - Sources > Tables
 - Click on a table name --> takes you to explorer view
 

@@ -379,6 +379,10 @@
                                 {
                                     "name": "DB_DATABASE",
                                     "value": "${DB_DATABASE}"
+                                },
+                                {
+                                    "name": "APPLICATION_NAME",
+                                    "value": "${APPLICATION_NAME}"
                                 }
                             ]
                         }

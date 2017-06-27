@@ -11,6 +11,14 @@ if [ ! -f $SUPERSET_HOME/superset_config.py ]; then
   echo "No Superset config found, creating from environment"
 
   cat > $SUPERSET_HOME/superset_config.py <<EOF
+import os
+from demo_init import create_driver
+from demo_init import create_car_data
+from demo_init import create_driver_offenses
+from demo_init import create_route
+from demo_init import create_traffic_violation
+from demo_init import create_weather_data
+
 ROW_LIMIT = ${SUP_ROW_LIMIT}
 WEBSERVER_THREADS = ${SUP_WEBSERVER_THREADS}
 SUPERSET_WEBSERVER_PORT = ${SUP_WEBSERVER_PORT}
@@ -18,6 +26,13 @@ SUPERSET_WEBSERVER_TIMEOUT = ${SUP_WEBSERVER_TIMEOUT}
 SECRET_KEY = '${SUP_SECRET_KEY}'
 SQLALCHEMY_DATABASE_URI = '${SUP_META_DB_URI}'
 CSRF_ENABLED = ${SUP_CSRF_ENABLED}
+
+create_driver()
+create_car_data()
+create_driver_offenses()
+create_route()
+create_traffic_violation()
+create_weather_data()
 EOF
 fi
 

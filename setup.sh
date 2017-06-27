@@ -74,6 +74,15 @@ echo -e '\n\n=== Loading data into postgres db pod ['$pgpod'] -- This takes seve
  
 oc exec -i ${pgpod} -- /bin/sh -i -c "psql -h 127.0.0.1 -U ${POSTGRES_USERNAME} -q -d ${POSTGRES_DATABASE}" < initial_data.sql
 
+echo -e '\n\n=== Waiting 30 sec for superset pod to init, before setting up demo slices ==='
+sleep 30s
+
+fullsuperpod=$(oc get pod -o name --selector="deploymentConfig=${OPENSHIFT_APPLICATION_NAME}")
+superpod=$(echo $fullsuperpod | cut -d '/' -f 2)
+echo -e '\n\n=== Setting up superset slices in pod ['$superpod'] ==='
+
+oc exec -i ${superpod} -- /bin/sh -i -c "python /superset/superset_config.py"
+
 echo "==============================================="
 echo "Done"
 echo "==============================================="
