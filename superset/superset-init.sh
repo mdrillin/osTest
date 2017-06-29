@@ -18,6 +18,7 @@ from demo_init import create_driver_offenses
 from demo_init import create_route
 from demo_init import create_traffic_violation
 from demo_init import create_weather_data
+from demo_init import create_demo_dashboard
 
 ROW_LIMIT = ${SUP_ROW_LIMIT}
 WEBSERVER_THREADS = ${SUP_WEBSERVER_THREADS}
@@ -33,6 +34,7 @@ create_driver_offenses()
 create_route()
 create_traffic_violation()
 create_weather_data()
+create_demo_dashboard()
 EOF
 fi
 
